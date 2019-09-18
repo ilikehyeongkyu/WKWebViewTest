@@ -26,6 +26,9 @@ class ViewController: UIViewController {
         let userContentController = WKUserContentController()
         userContentController.add(self, name: "kakaoWebViewController")
         
+        let userScript = WKUserScript(source: jsCodeToInject, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
+        userContentController.addUserScript(userScript)
+        
         let configuration = WKWebViewConfiguration()
         configuration.userContentController = userContentController
         
@@ -67,10 +70,6 @@ class ViewController: UIViewController {
     
     @objc private func showMenu() {
         let alert = UIAlertController(title: "Test", message: nil, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Inject Javascript", style: .default, handler: { (action) in
-            self.injectJavascript()
-        }))
-        
         alert.addAction(UIAlertAction(title: "js: testInjectedJavascript()", style: .default, handler: { (action) in
             let jsCode = "testInjectedJavascript();"
             self.evaluateJavaScript(jsCode: jsCode)
@@ -84,18 +83,6 @@ class ViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         
         present(alert, animated: true, completion: nil)
-    }
-    
-    private func injectJavascript() {
-        print("inject javascript =\n\(jsCodeToInject)")
-        
-        webView.evaluateJavaScript(jsCodeToInject) { (result, error) in
-            guard let error = error else {
-                print("yeah!, evaluate javascript no error!")
-                return
-            }
-            print("WTF!, javascript error = \(error)")
-        }
     }
     
     private func evaluateJavaScript(jsCode: String) {
